@@ -86,6 +86,7 @@ import micropolisj.engine.ToolStroke;
 import micropolisj.engine.ZoneStatus;
 
 public class MainWindow extends JFrame implements CityListener, EarthquakeListener {
+  private final micropolisj.audio.MusicService music = new micropolisj.audio.MusicService();
   static final ResourceBundle strings = ResourceBundle.getBundle("strings.GuiStrings");
   static final String EXTENSION = "cty";
   private static final ImageIcon appIcon;
@@ -349,6 +350,7 @@ public class MainWindow extends JFrame implements CityListener, EarthquakeListen
     reloadFunds();
     reloadOptions();
     notificationPane.setVisible(false);
+    updateMusic();
 
     if (timerEnabled) {
       startTimer();
@@ -406,6 +408,14 @@ public class MainWindow extends JFrame implements CityListener, EarthquakeListen
     if (maybeSaveCity()) {
       dispose();
     }
+  }
+
+  @Override
+  public void dispose() {
+    music.close();
+    if (simTimer != null) simTimer.stop();
+    if (shakeTimer != null) shakeTimer.stop();
+    super.dispose();
   }
 
   private JComponent makeDateFunds() {
@@ -510,6 +520,10 @@ public class MainWindow extends JFrame implements CityListener, EarthquakeListen
     setupKeys(soundsMenuItem, "menu.options.sound");
     soundsMenuItem.addActionListener(wrapActionListener(ev -> onSoundClicked()));
     optionsMenu.add(soundsMenuItem);
+
+    JMenuItem musicItem = new JMenuItem(strings.getString("music.title"));
+    musicItem.addActionListener(ev -> new MusicDialog(this, music).setVisible(true));
+    optionsMenu.add(musicItem);
 
     menuItem = new JMenuItem(strings.getString("menu.options.zoom_in"));
     setupKeys(menuItem, "menu.options.zoom_in");
@@ -891,7 +905,9 @@ public class MainWindow extends JFrame implements CityListener, EarthquakeListen
       stopTimer();
     }
 
+    music.title();
     new NewCityDialog(this, !firstTime).setVisible(true);
+    updateMusic();
 
     if (timerEnabled) {
       startTimer();
@@ -1111,6 +1127,23 @@ public class MainWindow extends JFrame implements CityListener, EarthquakeListen
   @Override
   public void cityMessage(MicropolisMessage message, CityLocation loc) {
     messagesPane.appendCityMessage(message);
+    switch (message) {
+      case FIRE_REPORT,
+          MONSTER_REPORT,
+          TORNADO_REPORT,
+          EARTHQUAKE_REPORT,
+          PLANECRASH_REPORT,
+          SHIPWRECK_REPORT,
+          TRAIN_CRASH_REPORT,
+          COPTER_CRASH_REPORT,
+          FIREBOMBING_REPORT,
+          EXPLOSION_REPORT,
+          FLOOD_REPORT,
+          MELTDOWN_REPORT,
+          RIOTING_REPORT ->
+          music.disaster();
+      default -> {}
+    }
 
     if (message.isUseNotificationPane() && loc != null) {
       notificationPane.showMessage(engine, message, loc.getX(), loc.getY());
@@ -1125,6 +1158,16 @@ public class MainWindow extends JFrame implements CityListener, EarthquakeListen
   @Override
   public void optionsChanged() {
     reloadOptions();
+    updateMusic();
+  }
+
+  private void updateMusic() {
+    music.city(engine.getEvaluation().getCityClass(), engine.getSimSpeed() == Speed.PAUSED);
+  }
+
+  @Override
+  public void evaluationChanged() {
+    updateMusic();
   }
 
   private void reloadOptions() {
@@ -1156,14 +1199,30 @@ public class MainWindow extends JFrame implements CityListener, EarthquakeListen
 
     try {
       Clip clip = AudioSystem.getClip();
-      clip.open(AudioSystem.getAudioInputStream(audioFile));
-      clip.start();
+      try (var raw = AudioSystem.getAudioInputStream(audioFile)) {
+        var source = raw.getFormat();
+        var format =
+            new javax.sound.sampled.AudioFormat(
+                source.getSampleRate(), 16, source.getChannels(), true, false);
+        try (var pcm = AudioSystem.getAudioInputStream(format, raw)) {
+          byte[] data = pcm.readAllBytes();
+          for (int at = 0; at < data.length; at += format.getFrameSize()) {
+            micropolisj.audio.StreamingMusicPlayer.scaleFrame(
+                data, at, format.getChannels(), music.effectVolume() / 100.0);
+          }
+          clip.open(format, data, 0, data.length);
+        }
+      } catch (Exception e) {
+        clip.close();
+        throw e;
+      }
       clip.addLineListener(
           event -> {
             if (event.getType().equals(LineEvent.Type.STOP)) {
               event.getLine().close();
             }
           });
+      clip.start();
     } catch (Exception e) {
       e.printStackTrace(System.err);
     }

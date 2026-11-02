@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Supply your own local audio files. No music or ROM data is distributed here. -->
+<music volume="0.6" fadeMillis="1000" pauseWithGame="false">
+  <track id="title" file="music/title.wav" loop="true"/>
+  <track id="city" file="music/city.mp3" loop="true"/>
+  <track id="town" file="music/town.ogg" loop="true"/>
+  <track id="disaster" file="music/disaster.flac" loop="true"/>
+  <rule scene="title" track="title"/>
+  <rule scene="city" track="city"/>
+  <rule scene="city" cityClass="1" track="town"/>
+  <rule scene="disaster" track="disaster" priority="100" seconds="15"/>
+</music>
