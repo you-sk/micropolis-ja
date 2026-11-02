@@ -14,14 +14,24 @@ SimCityやElectronic Artsの公式製品・公式日本語版ではありませ�
 |-----------------------------------------------------|----------------------------------------------------|
 | ![日本語の起動画面と難易度選択](docs/images/japanese-welcome.jpg) | ![日本語の予算項目と操作ボタン](docs/images/japanese-budget.jpg) |
 
+起動時には独自のレトロ調スプラッシュを表示します。クリックまたはキーでスキップできます。
+
+![日本語の案内を表示した独自スプラッシュ](docs/screenshots/splash-ja.png)
+
 ## この版の変更
 
-2026-11-01時点の変更:
+2026-11-02時点でmainに反映した変更:
 
 - メニュー、予算、都市評価、地区照会、通知の日本語化。
 - 英語原文を基準に日本語訳を再検討し、地区名などの用語を統一。
 - 建物と煙の画像を順番に合成し、煙のあるタイルで建物が消える問題を修正。
-- 日本語リソースと画像合成の回帰テストを追加。
+- 外部BGMの再生を追加。PCM WAV、MP3、Ogg Vorbis、FLACと、Windows x64向けのSPC再生に対応。
+- XMLでタイトル、都市の発展段階、災害、都市評価、人口到達時の祝賀を選曲。切り替え時のフェード、ループ、割り込みの優先順位を設定可能。
+- BGMと効果音の音量を個別に調整できる設定画面を追加。
+- 独自画像による起動スプラッシュを追加。画像の作成記録と無効化の方法は [docs/splash.md](docs/splash.md) を参照。
+- Windowsの起動スクリプトでJava 25以降を検出し、古いJavaが設定されていても対応版を選択。
+- 依存ライブラリ・対応ソース・ライセンス文書をまとめた配布ZIPを作成できるように変更。
+- 日本語リソース、画像合成、BGM設定・選曲・デコード、スプラッシュの回帰テストを追加。
 - ライセンスの追加条件を復元し、起動手順を更新。
 
 翻訳の範囲・方針は [docs/localization-status.md](docs/localization-status.md) を参照してください。
@@ -30,38 +40,81 @@ SimCityやElectronic Artsの公式製品・公式日本語版ではありませ�
 
 Java **25** のJDKとApache Mavenが必要です。特定のIDEは必要ありません。
 `java -version` と `mvn -version` で使用するJavaを確認してください。
+起動スクリプトのJava自動検出はMavenには適用されないため、MavenもJava 25を使うように設定してください。
+
+### Javaだけでビルドする場合
 
 ```sh
 mvn clean package
-java -Duser.language=ja -Duser.country=JP -jar target/micropolis-2.0.0.jar
+java --enable-native-access=ALL-UNNAMED -Duser.language=ja -Duser.country=JP -jar target/micropolis-2.0.0.jar
 ```
 
 英語で起動する場合:
 
 ```sh
-java -Duser.language=en -Duser.country=US -jar target/micropolis-2.0.0.jar
+java --enable-native-access=ALL-UNNAMED -Duser.language=en -Duser.country=US -jar target/micropolis-2.0.0.jar
 ```
 
-Windows PowerShellでは、ビルド後に次のスクリプトも使用できます。
+このビルドでは一般音声4形式を利用できます。SPCには次のネイティブライブラリも必要です。
+
+### Windows x64でSPC再生も含める場合
+
+Java 25・Mavenに加え、CMakeとVisual Studio 2022のC++ビルドツールが必要です。
+
+```powershell
+mvn clean
+./scripts/build-spc.ps1
+mvn package
+./start-micropolis.ps1
+```
+
+SPCのビルド後に `mvn clean` を実行すると、作成したDLLも削除されます。
+再ビルドするときも上記の順序で実行してください。他OSでのSPC再生は未検証です。
+
+### Windowsの起動スクリプト
+
+ビルド後、プロジェクトのフォルダで次を実行します。Windows PowerShell 5.1でも利用できます。
+
+```powershell
+./start-micropolis.ps1
+```
+
+日本語は `start-micropolis.ps1`、英語は `start-micropolis-original.ps1` です。
+`original` は表示言語が英語という意味です。描画修正などを取り消した版ではありません。
+`start-micropolis-common.ps1` は共通処理で、単独では起動に使いません。
+
 Java 25以降を、`JAVA_HOME`、`PATH`、ユーザーフォルダの `.jdks` の順に探します。
 古いJavaはスキップします。このゲームだけJavaを指定する場合は `MICROPOLIS_JAVA_HOME` を設定してください。
 システム全体の `JAVA_HOME` は変更しません。
 
-```powershell
-./start-micropolis.ps1
-./start-micropolis-original.ps1
-```
+スクリプトは同じフォルダのJARを優先し、なければ `target/` のJARを使用します。
+配布ZIPを展開した場合も、展開先の起動スクリプトを使用できます。
 
-`original` は表示言語が英語という意味です。描画修正などを取り消した版ではありません。
+### 配布用ファイル
+
+`mvn package` で `target/micropolis-2.0.0-dist.zip` を作成します。
+JAR、`lib/`、SPCビルド済みなら `native/`、依存ライブラリの対応ソース、説明書とライセンスを含みます。
+JARだけを取り出さず、ZIP内の配置を保って使用してください。
+
+## BGMの設定
+
+初回は「設定 → BGM設定...」で音楽パックのXMLを選び、BGMを有効にしてください。
+設定ファイルと音量は次回起動時にも引き継ぎます。XMLを変更した後は「再読み込み」を押します。
+サンプルは [examples/music.xml](examples/music.xml)、全設定と制限は [docs/music.md](docs/music.md) を参照してください。
+
+音楽は各自で用意します。音楽未設定でも遊べます。
+公開スクリプトは特定の音楽パックを指定せず、保存済みのBGM設定を読み込みます。
+音楽ファイル・ROM・取り出した音源・手元専用の取り出し器や起動補助スクリプトは配布しません。
+
+都市評価では市長への支持率50%を境に曲を使い分け、評価画面を閉じると通常曲へ戻ります。
+災害や人口到達の曲は設定した時間だけ割り込み、終了時点の画面・都市クラスに合う曲へ戻ります。
+評価や祝賀を定義していない既存の音楽パックも引き続き利用できます。
 
 ## 開発
 
-開発ブランチでは外部BGM機能を追加しています。設定と対応範囲は [docs/music.md](docs/music.md) を参照してください。
-独自のレトロ調スプラッシュを起動時に表示します。画像と無効化の方法は [docs/splash.md](docs/splash.md) を参照してください。
-ビルド後の起動には `target/` 内のJARと `lib/` を同じ配置で使用します。
-
 - `src/main/java/micropolisj/engine/`: 都市シミュレーション、地形生成、災害、予算、保存処理。
 - `src/main/java/micropolisj/gui/`: Swingの画面とタイル描画。
+- `src/main/java/micropolisj/audio/`: 音楽設定、選曲、ストリーミング再生、デコーダー接続。
 - `src/main/resources/strings/`: 言語別リソース。無印が英語、`_ja` が日本語です。
 - `src/main/resources/graphics/`: タイル画像と合成レシピ。
 - `src/test/java/`: JUnitによる回帰テスト。
