@@ -12,6 +12,9 @@ public final class AudioDecoder {
   private AudioDecoder() {}
 
   public static AudioInputStream open(Path path) throws IOException {
+    if (path.getFileName().toString().toLowerCase(java.util.Locale.ROOT).endsWith(".spc")) {
+      return SpcPcmStream.open(path);
+    }
     if (path.getFileName().toString().toLowerCase(java.util.Locale.ROOT).endsWith(".ogg")) {
       return VorbisPcmStream.open(path);
     }

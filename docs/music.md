@@ -22,7 +22,7 @@ java -Dmicropolis.music=/path/to/music.xml -jar target/micropolis-2.0.0.jar
 - `fadeMillis`: 曲を切り替える際のフェード時間（0〜10000ミリ秒）。順番にフェードアウト／インします。
 - `pauseWithGame`: `true` ならシミュレーションの一時停止中にBGMも一時停止します。既定は `false`。
 - `track`: 一意の `id` と `file`。`loop` は既定で `true`。
-- `track.seconds`: 1回の再生を区切る秒数。0または省略ならファイル終端まで。途中からのループは未対応です。
+- `track.seconds`: 1回の再生を区切る秒数。0または省略ならファイル終端まで（SPCは180秒）。途中からのループは未対応です。
 - `rule.scene`: `title`（新規都市選択中）、`city`（都市プレイ中）、`disaster`（短時間の割り込み曲）。
 - `rule.cityClass`: 都市ルールだけに指定できます。0〜5が村・町・都市・首都・大都市・巨大都市。省略なら全段階。
 - `rule.priority`: 同じ場面のルールで数値が大きいものを優先。同じ値なら都市クラス指定ありを優先し、それも同じなら先に記述したルール。
@@ -38,7 +38,28 @@ java -Dmicropolis.music=/path/to/music.xml -jar target/micropolis-2.0.0.jar
 対応目標はPCM WAV、MP3、Ogg Vorbis、FLACです。Ogg Opusや多チャンネル音声は対象外です。
 一般音声は8〜192 kHz、モノラル／ステレオを扱います。
 Oggは単一論理ストリームに対応し、連結されたOggは対象外です。
-SPCは後続の実装で追加予定です。現段階ではSPC対応と表記しません。
+SPCはGame Music Emu 0.6.5を使い、44.1 kHz・16ビット・ステレオで再生します。
+ROMを読み込む機能やROMからの取り出し器はゲーム本体に含みません。
+SPCは同じ `track.file` に `.spc` を指定します。タグの再生時間やループ位置は使わず、
+`track.seconds` で区切りを指定します。省略または0の場合、SPCだけは180秒で区切ります。
+ループ有効なら先頭のスナップショットから再開します。内蔵ドライバによる曲中のループとは別の設定です。
+
+Windows x64ではJava 25、CMake、Visual Studio 2022のC++ビルドツールを用意し、次の順序で作成します。
+
+```powershell
+mvn clean
+./scripts/build-spc.ps1
+mvn package
+./start-micropolis.ps1
+```
+
+SPCのビルド後に `mvn clean` を挟むとネイティブライブラリも削除されます。
+スクリプトは固定リビジョンのlibgmeを取得し、SPC専用DLLと対応ソースを配布ZIPに含めます。
+通常のJavaだけのビルドも可能ですが、その場合SPC実再生テストは明示的にスキップされます。
+現在同梱するネイティブライブラリはWindows x64向けです。他OSのビルド・実再生は未検証です。
+手動で起動する場合は `java --enable-native-access=ALL-UNNAMED ...` としてください。
+開発時に独自のlibgmeを使う場合は `-Dmicropolis.gme.library=/path/to/library` を指定できます。
+ライブラリがない・入力が壊れている場合はBGM設定画面に理由を表示し、ゲームは継続します。
 
 JARの隣の `lib/` にデコーダーのJARが必要です。Mavenの `package` で `target/lib/` に配置します。
 配布時にJARだけを移動せず、`lib/` とライセンス文書も一緒に置いてください。
@@ -57,3 +78,6 @@ XMLの異常、相対パス、ルールの競合、同じ曲の維持、割り�
 一時停止／再開、終了後の再生スレッド解放を確認しました。
 音楽未設定での新規都市開始と、日本語のBGM設定画面の表示も確認しています。
 音声は生成した正弦波による動作確認であり、楽曲ごとの音質を保証するものではありません。
+SPCについても自作のSPC700プログラムと波形をテスト内で生成し、復号結果が無音でないことと反復解放を確認します。
+手元のSPCでもPCM復号、音声デバイスへの出力、ループ、停止・再開、フェードと効果音の同時出力を確認しました。
+この検証用音源は公開テスト・Git・配布ZIPには含めていません。

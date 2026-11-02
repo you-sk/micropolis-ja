@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     permissions:
       contents: write
     steps:
@@ -16,8 +16,13 @@ jobs:
         with:
           java-version: '25'
           distribution: 'temurin'
+      - name: Clean build directory
+        run: mvn -B clean
+      - name: Build Windows SPC decoder
+        shell: pwsh
+        run: ./scripts/build-spc.ps1
       - name: Build with Maven
-        run: mvn -B clean package
+        run: mvn -B package
       - name: Archive corresponding source
         run: git archive --format=zip --prefix=micropolis-source/ --output=target/micropolis-source.zip HEAD
       - name: Upload JAR to Release

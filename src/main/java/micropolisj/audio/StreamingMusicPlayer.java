@@ -92,10 +92,12 @@ public final class StreamingMusicPlayer implements MusicPlayer {
           byte[] buffer = new byte[1024 * format.getFrameSize()];
           long loopFrames = 0;
           long fadeInFrames = (long) (format.getFrameRate() * started.fadeMillis() / 1000);
+          double seconds = track.seconds();
+          if (seconds == 0
+              && track.file().toString().toLowerCase(java.util.Locale.ROOT).endsWith(".spc"))
+            seconds = 180;
           long limit =
-              track.seconds() > 0
-                  ? Math.max(1, (long) (format.getFrameRate() * track.seconds()))
-                  : Long.MAX_VALUE;
+              seconds > 0 ? Math.max(1, (long) (format.getFrameRate() * seconds)) : Long.MAX_VALUE;
           while (!closed) {
             if (request != started && fadeOutFrames < 0) {
               if (paused) break;

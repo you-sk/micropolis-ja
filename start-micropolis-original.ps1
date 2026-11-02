@@ -11,5 +11,5 @@ if ($env:JAVA_HOME) {
 } else {
     $java = (Get-Command java -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source
 }
-& $java '-Duser.language=en' '-Duser.country=US' -jar $jar
+& $java '--enable-native-access=ALL-UNNAMED' '-Duser.language=en' '-Duser.country=US' -jar $jar
 exit $LASTEXITCODE

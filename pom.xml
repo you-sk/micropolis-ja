@@ -233,7 +233,7 @@
         <configuration>
           <java>
             <includes>
-              <include>**/*.java</include>
+              <include>src/**/*.java</include>
             </includes>
             <excludes>
               <exclude>**/target/**/*.java</exclude>
@@ -243,7 +243,7 @@
           </java>
           <pom>
             <includes>
-              <include>**/pom.xml</include>
+              <include>pom.xml</include>
             </includes>
             <sortPom>
               <expandEmptyElements>false</expandEmptyElements>
@@ -253,6 +253,10 @@
             <includes>
               <include>**/*.md</include>
             </includes>
+            <excludes>
+              <exclude>private/**</exclude>
+              <exclude>target/**</exclude>
+            </excludes>
             <flexmark/>
           </markdown>
         </configuration>
