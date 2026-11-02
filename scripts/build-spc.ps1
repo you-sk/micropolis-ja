@@ -37,4 +37,15 @@ if (Test-Path -LiteralPath $archive) {
     git -C $SourceDirectory archive --format=zip --output=$sourceArchive HEAD
     if ($LASTEXITCODE -ne 0) { throw 'libgme source archive failed' }
 }
+# The upstream source contains a game music sample (test.nsf) which this SPC-only
+# build never uses. Supply the corresponding emulator source without music assets.
+Add-Type -AssemblyName System.IO.Compression.FileSystem
+$sourceArchive = Join-Path $sources "game-music-emu-$commit.zip"
+$zip = [IO.Compression.ZipFile]::Open($sourceArchive, [IO.Compression.ZipArchiveMode]::Update)
+try {
+    $assets = @($zip.Entries | Where-Object { $_.FullName -match '(?i)\.(nsf|nsfe|spc|sfc|smc|gbs|gym|vgm|vgz|hes|kss|sap|ay)$' })
+    foreach ($entry in $assets) { $entry.Delete() }
+} finally {
+    $zip.Dispose()
+}
 Write-Output "SPC decoder ready: $native"

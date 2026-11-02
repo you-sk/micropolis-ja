@@ -43,7 +43,9 @@ java -Duser.language=en -Duser.country=US -jar target/micropolis-2.0.0.jar
 ```
 
 Windows PowerShellでは、ビルド後に次のスクリプトも使用できます。
-`JAVA_HOME` のJavaを優先し、未指定の場合は `PATH` のJavaを使用します。
+Java 25以降を、`JAVA_HOME`、`PATH`、ユーザーフォルダの `.jdks` の順に探します。
+古いJavaはスキップします。このゲームだけJavaを指定する場合は `MICROPOLIS_JAVA_HOME` を設定してください。
+システム全体の `JAVA_HOME` は変更しません。
 
 ```powershell
 ./start-micropolis.ps1
@@ -55,6 +57,7 @@ Windows PowerShellでは、ビルド後に次のスクリプトも使用でき�
 ## 開発
 
 開発ブランチでは外部BGM機能を追加しています。設定と対応範囲は [docs/music.md](docs/music.md) を参照してください。
+独自のレトロ調スプラッシュを起動時に表示します。画像と無効化の方法は [docs/splash.md](docs/splash.md) を参照してください。
 ビルド後の起動には `target/` 内のJARと `lib/` を同じ配置で使用します。
 
 - `src/main/java/micropolisj/engine/`: 都市シミュレーション、地形生成、災害、予算、保存処理。

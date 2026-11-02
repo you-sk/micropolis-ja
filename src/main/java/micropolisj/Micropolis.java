@@ -9,16 +9,24 @@
 package micropolisj;
 
 import javax.swing.SwingUtilities;
+import micropolisj.audio.MusicService;
 import micropolisj.gui.MainWindow;
+import micropolisj.gui.SplashWindow;
 
 class Micropolis {
-  private static void createAndShowGUI() {
-    MainWindow win = new MainWindow();
+  private static void createAndShowGUI(MusicService music) {
+    MainWindow win = new MainWindow(music);
     win.setVisible(true);
     win.doNewCity(true);
   }
 
   public static void main(String[] args) {
-    SwingUtilities.invokeLater(Micropolis::createAndShowGUI);
+    // Resource IO and image preparation happen before entering the Swing event thread.
+    var artwork = SplashWindow.loadArtwork();
+    SwingUtilities.invokeLater(
+        () -> {
+          MusicService music = new MusicService();
+          SplashWindow.show(artwork, () -> createAndShowGUI(music));
+        });
   }
 }

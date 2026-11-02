@@ -86,7 +86,7 @@ import micropolisj.engine.ToolStroke;
 import micropolisj.engine.ZoneStatus;
 
 public class MainWindow extends JFrame implements CityListener, EarthquakeListener {
-  private final micropolisj.audio.MusicService music = new micropolisj.audio.MusicService();
+  private final micropolisj.audio.MusicService music;
   static final ResourceBundle strings = ResourceBundle.getBundle("strings.GuiStrings");
   static final String EXTENSION = "cty";
   private static final ImageIcon appIcon;
@@ -137,10 +137,15 @@ public class MainWindow extends JFrame implements CityListener, EarthquakeListen
   private EarthquakeStepper currentEarthquake;
 
   public MainWindow() {
-    this(new Micropolis());
+    this(new micropolisj.audio.MusicService());
   }
 
-  private MainWindow(Micropolis engine) {
+  public MainWindow(micropolisj.audio.MusicService music) {
+    this(new Micropolis(), music);
+  }
+
+  private MainWindow(Micropolis engine, micropolisj.audio.MusicService music) {
+    this.music = java.util.Objects.requireNonNull(music);
     setIconImage(appIcon.getImage());
 
     this.engine = engine;
