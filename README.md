@@ -10,8 +10,8 @@ SimCityやElectronic Artsの公式製品・公式日本語版ではありませ�
 
 ![日本語のゲームメニューとメッセージが表示されたMicropolisのメイン画面](docs/images/japanese-menu.jpg)
 
-| 起動画面 | 予算ダイアログ |
-| --- | --- |
+|                        起動画面                         |                      予算ダイアログ                       |
+|-----------------------------------------------------|----------------------------------------------------|
 | ![日本語の起動画面と難易度選択](docs/images/japanese-welcome.jpg) | ![日本語の予算項目と操作ボタン](docs/images/japanese-budget.jpg) |
 
 ## この版の変更
@@ -53,6 +53,9 @@ Windows PowerShellでは、ビルド後に次のスクリプトも使用でき�
 `original` は表示言語が英語という意味です。描画修正などを取り消した版ではありません。
 
 ## 開発
+
+開発ブランチでは外部BGM機能を追加しています。設定と対応範囲は [docs/music.md](docs/music.md) を参照してください。
+ビルド後の起動には `target/` 内のJARと `lib/` を同じ配置で使用します。
 
 - `src/main/java/micropolisj/engine/`: 都市シミュレーション、地形生成、災害、予算、保存処理。
 - `src/main/java/micropolisj/gui/`: Swingの画面とタイル描画。
