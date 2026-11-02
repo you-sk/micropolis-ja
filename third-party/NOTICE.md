@@ -23,3 +23,10 @@ No copyrighted game music or ROM content is included with these libraries or thi
 
 Source artifacts are available from Maven Central under the same artifact/version paths:
 https://repo.maven.apache.org/maven2/
+
+The Windows SPC distribution additionally contains Game Music Emu 0.6.5, revision
+9e23d10f9fd2a6a2f33b10912dd8dc7153258995, by Shay Green and contributors.
+https://github.com/libgme/game-music-emu
+Only the SPC emulator is enabled. No GPL-only YM2612 emulator or game data is included.
+The unmodified source archive is provided under dependency-sources/; native/gme.dll remains replaceable.
+Its license is LGPL 2.1 or later (see LGPL-2.1.txt and the per-file notices in the source archive).
