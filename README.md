@@ -43,7 +43,9 @@ java -Duser.language=en -Duser.country=US -jar target/micropolis-2.0.0.jar
 ```
 
 Windows PowerShellでは、ビルド後に次のスクリプトも使用できます。
-`JAVA_HOME` のJavaを優先し、未指定の場合は `PATH` のJavaを使用します。
+Java 25以降を、`JAVA_HOME`、`PATH`、ユーザーフォルダの `.jdks` の順に探します。
+古いJavaはスキップします。このゲームだけJavaを指定する場合は `MICROPOLIS_JAVA_HOME` を設定してください。
+システム全体の `JAVA_HOME` は変更しません。
 
 ```powershell
 ./start-micropolis.ps1
