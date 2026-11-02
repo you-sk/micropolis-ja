@@ -1,104 +1,85 @@
-# Micropolis
+# Micropolis 日本語化・改良版
 
-![Java CI with Gradle](https://github.com/dheid/micropolis/workflows/Java%20CI%20with%20Gradle/badge.svg?branch=master)
+[dheid/micropolis](https://github.com/dheid/micropolis) を基にした、非公式の日本語化・改良版です。
+MicropolisJ（Java版Micropolis）の都市シミュレーションと既存の画像・音声を引き継いでいます。
+SimCityやElectronic Artsの公式製品・公式日本語版ではありません。
 
-Micropolis is the Open Source Release of the original SimCity source code. This is a Java rewrite
-fork based on [MicropolisJ by Jason Long](https://github.com/SimHacker/micropolis/tree/master/micropolis-java), which was first released in Feburary 2013. MicropolisJ was
-functionality-wise almost equivalent to the TCL/Tk edition
+## この版の変更
 
-The original game, SimCity, was developed by Will Wright. Don Hopkins released [a GPL open source
-version named Micropolis](https://github.com/SimHacker/micropolis) as a part of the One Laptop Per
-Child (OLPC) program.
+2026-11-01時点の変更:
 
-The forked version is Copyright (C) 2013 Jason Long (jason@long.name).
+- メニュー、予算、都市評価、地区照会、通知の日本語化。
+- 英語原文を基準に日本語訳を再検討し、地区名などの用語を統一。
+- 建物と煙の画像を順番に合成し、煙のあるタイルで建物が消える問題を修正。
+- 日本語リソースと画像合成の回帰テストを追加。
+- ライセンスの追加条件を復元し、起動手順を更新。
+
+翻訳の範囲・方針は [docs/localization-status.md](docs/localization-status.md) を参照してください。
+
+## ビルドと起動
+
+Java **25** のJDKとApache Mavenが必要です。特定のIDEは必要ありません。
+`java -version` と `mvn -version` で使用するJavaを確認してください。
+
+```sh
+mvn clean package
+java -Duser.language=ja -Duser.country=JP -jar target/micropolis-2.0.0.jar
+```
+
+英語で起動する場合:
+
+```sh
+java -Duser.language=en -Duser.country=US -jar target/micropolis-2.0.0.jar
+```
+
+Windows PowerShellでは、ビルド後に次のスクリプトも使用できます。
+`JAVA_HOME` のJavaを優先し、未指定の場合は `PATH` のJavaを使用します。
+
+```powershell
+./start-micropolis.ps1
+./start-micropolis-original.ps1
+```
+
+`original` は表示言語が英語という意味です。描画修正などを取り消した版ではありません。
+
+## 開発
+
+- `src/main/java/micropolisj/engine/`: 都市シミュレーション、地形生成、災害、予算、保存処理。
+- `src/main/java/micropolisj/gui/`: Swingの画面とタイル描画。
+- `src/main/resources/strings/`: 言語別リソース。無印が英語、`_ja` が日本語です。
+- `src/main/resources/graphics/`: タイル画像と合成レシピ。
+- `src/test/java/`: JUnitによる回帰テスト。
+
+```sh
+mvn test
+```
+
+Mavenの通常ビルドはSpotlessでソースを整形します。調査時などに整形を避けたい場合は
+`mvn -Dspotless.skip=true test` を使用してください。
+
+ゲーム内の保存形式は `.cty` です。保存データは各自で管理してください。
+
+## 出自とライセンス
+
+このJava版の直接の上流は [dheid/micropolis](https://github.com/dheid/micropolis) です。
+その基となった [MicropolisJ](https://github.com/SimHacker/micropolis/tree/master/micropolis-java)
+はJason Longが2013年に公開したJava版です。
+オリジナルのSimCityはWill Wrightが開発し、Don HopkinsがOLPC向けに
+[Micropolis](https://github.com/SimHacker/micropolis) をオープンソースとして公開しました。
+
+Copyright (C) 2013 Jason Long (jason@long.name).
 Portions Copyright (C) 1989-2007 Electronic Arts Inc.
 
-# Prerequisites
+本ソフトウェアはGNU GPL version 3、またはそれ以降の版、および上流由来の追加条件に従います。
+[LICENSE](LICENSE) にGPL本文、[NOTICE](NOTICE) に追加条件・著作権・免責の原文を収録しています。
+既存のファイル単位の権利表記も維持してください。
+ソースのヘッダーが参照する追加条件の原文は、本配布ではNOTICEに収録しています。
+SimCityなどのElectronic Artsの商標を使用する権利や、同社との提携関係は与えられません。
 
-To install and run this game, you need to install the Java Runtime Environment. You can get Java from
-https://www.java.com/
+日本語訳はこのリポジトリの英語リソースを基準とします。
+市販版のディスクイメージ、抽出データ、攻略本などは配布物に含みません。
+ソースを配布する場合はREADME・LICENSE・NOTICEを含めてください。
+JARを配布する場合は、それに対応するソースも同じ配布場所から入手できるようにしてください。
 
-For development, please install the Java Development Toolkit. I recommend OpenJDK. You'll find an
-installation instruction here: https://openjdk.java.net/install/
-
-# Building from Source
-
-To build the project from source, you need [Apache Maven](https://maven.apache.org/) installed.
-
-```bash
-mvn clean package
-```
-
-After a successful build, the executable JAR file will be created in the `target/` directory:
-
-```bash
-java -jar target/micropolis-1.0.0-SNAPSHOT.jar
-```
-
-# Running
-
-The release archive comes with start scripts that ease the process of running the game.
-
-## Linux and Mac
-
-Download the Tar archive of the [latest version of Micropolis](https://github.com/dheid/micropolis/releases/latest). x.x.x is the version number
-
-(1) Extract the tar archive: `tar xf /path/to/micropolis-x.x.x.tar`
-
-(2) Run `./micropolis-x.x.x/bin/micropolis` to start the game
-
-## Windows
-
-Download the ZIP archive of the [latest version of Micropolis](https://github.com/dheid/micropolis/releases/latest).
-
-(1) Extract the ZIP archive by double-clicking on the file
-
-(2) Double-click on `micropolis.bat` within the directory `bin`
-
-# Development
-
-The `micropolisj.engine` package contains the guts of the city simulation. It has no dependencies
-on the front-end or any particular graphical system.
-
-The `micropolisj.gui packag`e provides the user interface for the game. It renders the city, controls
-the speed of the simulation, and responds to event messages from the engine.
-
-## Localization
-
-Unless you are an English speaker, you may like to run Micropolis in your own language. Micropolis
-is designed to be run in any language, but needs translators to provide the translated text to
-display.
-
-If you want to translate the game to another language, please first determine the ISO 639-1 language
-code of your target language, e.g. for Spanish use `es` (lower case). A list of language codes can
-be found here: https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
-
-1. Fork the repository on GitHub and clone it locally.
-
-2. Create a copy of each property file in `src/main/resources/strings` and rename the copy according
-   to your language code. This little bash code will help you:
-
-```bash
-export language_code=es # change this according to your language
-find src/main/resources/strings -regex '.*/\([A-Za-z]*\)\.properties' -exec sh -c 'filename={}; cp $filename ${filename%.properties}_$language_code.properties' \;
-```
-
-3. Translate the lines within the new resources bundles.
-
-4. Create a pull request.
-
-## File Format
-
-Save files have the following format:
-
-| Offset |                       Content                       |
-|--------|-----------------------------------------------------|
-| 0x0000 | History of residential levels (240 16-bit integers) |
-| 0x01E0 | History of commericial levels                       |
-| 0x03C0 | History of industrial levels                        |
-| 0x05A0 | History of crime levels                             |
-| 0x0780 | History of pollution levels                         |
-| 0x0960 | History of cash flow                                |
-| 0x0B40 | Miscellaneous values                                |
-| 0x0C30 | Map data (by columns, west to east)                 |
-
+この作業段階ではGitHubのフォークは未作成・未公開です。
+公開時はフォーク元とこの変更内容を維持し、この段落を実際の配布元URLに置き換えてください。
