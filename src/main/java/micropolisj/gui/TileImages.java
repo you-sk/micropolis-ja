@@ -56,13 +56,9 @@ public class TileImages {
     return savedInstances.get(size);
   }
 
-  private static FrameSpec parseFrameSpec(TileSpec spec) {
-    FrameSpec result = null;
-
+  static void drawTileLayers(Graphics2D gr, TileSpec spec, int tileWidth, int tileHeight) {
     for (String layerStr : spec.getImages()) {
-
       FrameSpec rv = new FrameSpec();
-      result = rv;
 
       String[] parts = layerStr.split("@", 2);
       rv.setImage(loadImage(parts[0]));
@@ -77,9 +73,20 @@ public class TileImages {
           rv.setOffsetY(Integer.parseInt(parts[1]));
         }
       } // endif something given after '@' in image specifier
-    } // end foreach layer in image specification
 
-    return result;
+      SourceImage sourceImg = rv.getImage();
+      gr.drawImage(
+          sourceImg.getImage(),
+          0,
+          0,
+          tileWidth,
+          tileHeight,
+          rv.getOffsetX(),
+          rv.getOffsetY(),
+          rv.getOffsetX() + STD_SIZE,
+          rv.getOffsetY() + STD_SIZE,
+          null);
+    } // end foreach layer in image specification
   }
 
   private static SourceImage loadImage(String fileName) {
@@ -120,24 +127,14 @@ public class TileImages {
       assert rawSpec != null;
 
       TileSpec tileSpec = TileSpec.parse(tileNumber, tileName, rawSpec, recipe);
-      FrameSpec ref = parseFrameSpec(tileSpec);
-      if (ref == null) {
+      if (tileSpec.getImages().length == 0) {
         // tile is defined, but it has no images
+        gr.dispose();
         continue;
       }
 
-      SourceImage sourceImg = ref.getImage();
-      gr.drawImage(
-          sourceImg.getImage(),
-          0,
-          0,
-          tileWidth,
-          tileHeight,
-          ref.getOffsetX(),
-          ref.getOffsetY(),
-          (ref.getOffsetX() + STD_SIZE),
-          (ref.getOffsetY() + STD_SIZE),
-          null);
+      drawTileLayers(gr, tileSpec, tileWidth, tileHeight);
+      gr.dispose();
 
       images[tileNumber] = bi;
     }
