@@ -81,5 +81,5 @@ SimCityなどのElectronic Artsの商標を使用する権利や、同社との�
 ソースを配布する場合はREADME・LICENSE・NOTICEを含めてください。
 JARを配布する場合は、それに対応するソースも同じ配布場所から入手できるようにしてください。
 
-この作業段階ではGitHubのフォークは未作成・未公開です。
-公開時はフォーク元とこの変更内容を維持し、この段落を実際の配布元URLに置き換えてください。
+この改良版のソースコード配布先は
+[you-sk/micropolis-ja](https://github.com/you-sk/micropolis-ja) です。

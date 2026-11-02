@@ -7,7 +7,7 @@
   <version>2.0.0</version>
 
   <description>Open Source Release of the original SimCity source code</description>
-  <url>https://github.com/dheid/micropolis</url>
+  <url>https://github.com/you-sk/micropolis-ja</url>
 
   <inceptionYear>2020</inceptionYear>
 
@@ -38,9 +38,9 @@
   </developers>
 
   <scm>
-    <connection>scm:git:git://github.com/dheid/micropolis.git</connection>
-    <developerConnection>scm:git:ssh://github.com:dheid/micropolis.git</developerConnection>
-    <url>https://github.com/dheid/micropolis/tree/main</url>
+    <connection>scm:git:https://github.com/you-sk/micropolis-ja.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/you-sk/micropolis-ja.git</developerConnection>
+    <url>https://github.com/you-sk/micropolis-ja/tree/main</url>
   </scm>
 
   <properties>
