@@ -21,7 +21,10 @@ public record MusicConfig(
   public enum Scene {
     TITLE,
     CITY,
-    DISASTER
+    DISASTER,
+    EVALUATION_GOOD,
+    EVALUATION_BAD,
+    REWARD
   }
 
   public record Track(String id, Path file, boolean loop, double seconds) {}
