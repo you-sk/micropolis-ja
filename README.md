@@ -4,6 +4,16 @@
 MicropolisJ（Java版Micropolis）の都市シミュレーションと既存の画像・音声を引き継いでいます。
 SimCityやElectronic Artsの公式製品・公式日本語版ではありません。
 
+## 日本語表示の例
+
+このフォークの実際のゲーム画面です。更地の新規都市で、日本語メニューとダイアログを表示しています。
+
+![日本語のゲームメニューとメッセージが表示されたMicropolisのメイン画面](docs/images/japanese-menu.jpg)
+
+| 起動画面 | 予算ダイアログ |
+| --- | --- |
+| ![日本語の起動画面と難易度選択](docs/images/japanese-welcome.jpg) | ![日本語の予算項目と操作ボタン](docs/images/japanese-budget.jpg) |
+
 ## この版の変更
 
 2026-11-01時点の変更:
