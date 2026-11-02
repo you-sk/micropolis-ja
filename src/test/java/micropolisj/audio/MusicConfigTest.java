@@ -59,4 +59,24 @@ class MusicConfigTest {
     Files.writeString(big, " ".repeat(1_048_577));
     assertThatThrownBy(() -> MusicConfig.load(big)).isInstanceOf(java.io.IOException.class);
   }
+
+  @Test
+  void readsOptionalEvaluationAndRewardScenes() throws Exception {
+    var config =
+        load(
+            """
+        <music>
+          <track id="good" file="good.wav"/>
+          <track id="bad" file="bad.ogg"/>
+          <track id="reward" file="reward.flac" loop="false" seconds="10"/>
+          <rule scene="evaluation_good" track="good" priority="10"/>
+          <rule scene="evaluation_bad" track="bad" priority="10"/>
+          <rule scene="reward" track="reward" priority="50" seconds="10"/>
+        </music>
+        """);
+    assertThat(config.select(MusicConfig.Scene.EVALUATION_GOOD, 0).id()).isEqualTo("good");
+    assertThat(config.select(MusicConfig.Scene.EVALUATION_BAD, 0).id()).isEqualTo("bad");
+    assertThat(config.selectRule(MusicConfig.Scene.REWARD, 0).seconds()).isEqualTo(10);
+    assertThat(config.select(MusicConfig.Scene.REWARD, 0).loop()).isFalse();
+  }
 }

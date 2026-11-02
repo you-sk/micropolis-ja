@@ -170,6 +170,18 @@ public class MainWindow extends JFrame implements CityListener, EarthquakeListen
 
     evaluationPane = new EvaluationPane(engine);
     evaluationPane.setVisible(false);
+    evaluationPane.addComponentListener(
+        new java.awt.event.ComponentAdapter() {
+          @Override
+          public void componentShown(java.awt.event.ComponentEvent event) {
+            music.evaluation(MainWindow.this.engine.getEvaluation().getCityYes());
+          }
+
+          @Override
+          public void componentHidden(java.awt.event.ComponentEvent event) {
+            music.endEvaluation();
+          }
+        });
     evalGraphsBox.add(evaluationPane, BorderLayout.PAGE_END);
 
     JPanel leftPane = new JPanel(new GridBagLayout());
@@ -1147,6 +1159,8 @@ public class MainWindow extends JFrame implements CityListener, EarthquakeListen
           MELTDOWN_REPORT,
           RIOTING_REPORT ->
           music.disaster();
+      case POP_2K_REACHED, POP_10K_REACHED, POP_50K_REACHED, POP_100K_REACHED, POP_500K_REACHED ->
+          music.reward();
       default -> {}
     }
 
@@ -1168,6 +1182,7 @@ public class MainWindow extends JFrame implements CityListener, EarthquakeListen
 
   private void updateMusic() {
     music.city(engine.getEvaluation().getCityClass(), engine.getSimSpeed() == Speed.PAUSED);
+    if (evaluationPane.isVisible()) music.evaluation(engine.getEvaluation().getCityYes());
   }
 
   @Override

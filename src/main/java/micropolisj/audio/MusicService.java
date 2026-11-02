@@ -110,6 +110,18 @@ public final class MusicService implements AutoCloseable {
     director.disaster();
   }
 
+  public void reward() {
+    director.reward();
+  }
+
+  public void evaluation(int approval) {
+    director.evaluation(approval);
+  }
+
+  public void endEvaluation() {
+    director.endEvaluation();
+  }
+
   @Override
   public void close() {
     control.shutdownNow();

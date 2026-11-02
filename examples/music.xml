@@ -5,8 +5,14 @@
   <track id="city" file="music/city.mp3" loop="true"/>
   <track id="town" file="music/town.ogg" loop="true"/>
   <track id="disaster" file="music/disaster.flac" loop="true"/>
+  <track id="evaluation-good" file="music/evaluation-good.ogg" loop="true"/>
+  <track id="evaluation-bad" file="music/evaluation-bad.wav" loop="true"/>
+  <track id="reward" file="music/reward.wav" loop="false" seconds="10"/>
   <rule scene="title" track="title"/>
   <rule scene="city" track="city"/>
   <rule scene="city" cityClass="1" track="town"/>
   <rule scene="disaster" track="disaster" priority="100" seconds="15"/>
+  <rule scene="evaluation_good" track="evaluation-good" priority="10"/>
+  <rule scene="evaluation_bad" track="evaluation-bad" priority="10"/>
+  <rule scene="reward" track="reward" priority="50" seconds="10"/>
 </music>
