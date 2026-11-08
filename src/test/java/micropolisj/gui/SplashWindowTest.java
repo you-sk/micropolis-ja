@@ -2,22 +2,29 @@ package micropolisj.gui;
 
 import static org.assertj.core.api.Assertions.*;
 
-import java.util.HashSet;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.SwingUtilities;
 import org.junit.jupiter.api.Test;
 
 class SplashWindowTest {
   @Test
-  void artworkUsesLowResolutionAndLimitedPalette() {
-    var artwork = SplashWindow.loadArtwork();
-    assertThat(artwork).isNotNull();
-    assertThat(artwork.getWidth()).isEqualTo(320);
-    assertThat(artwork.getHeight()).isEqualTo(200);
-    var colors = new HashSet<Integer>();
-    for (int y = 0; y < artwork.getHeight(); y++)
-      for (int x = 0; x < artwork.getWidth(); x++) colors.add(artwork.getRGB(x, y));
-    assertThat(colors.size()).isBetween(16, 24);
+  void eachSeasonHasLoadableArtwork() {
+    for (int month = 1; month <= 12; month++) {
+      var artwork = SplashWindow.loadArtwork(month);
+      assertThat(artwork).isNotNull();
+      assertThat(artwork.getWidth()).isEqualTo(480);
+      assertThat(artwork.getHeight()).isEqualTo(300);
+    }
+  }
+
+  @Test
+  void seasonsFollowJapaneseCalendarMonths() {
+    assertThat(java.util.stream.IntStream.rangeClosed(1, 12).mapToObj(SplashWindow::seasonForMonth))
+        .containsExactly(
+            "winter", "winter", "spring", "spring", "spring", "summer", "summer", "summer",
+            "autumn", "autumn", "autumn", "winter");
+    assertThatThrownBy(() -> SplashWindow.seasonForMonth(0))
+        .isInstanceOf(IllegalArgumentException.class);
   }
 
   @Test
