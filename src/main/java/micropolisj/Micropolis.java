@@ -26,7 +26,11 @@ class Micropolis {
     SwingUtilities.invokeLater(
         () -> {
           MusicService music = new MusicService();
-          SplashWindow.show(artwork, () -> createAndShowGUI(music));
+          SplashWindow.show(
+              artwork,
+              () -> createAndShowGUI(music),
+              (engine, file) -> new MainWindow(engine, music, file).setVisible(true),
+              music::close);
         });
   }
 }

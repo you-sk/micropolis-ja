@@ -144,6 +144,13 @@ public class MainWindow extends JFrame implements CityListener, EarthquakeListen
     this(new Micropolis(), music);
   }
 
+  public MainWindow(Micropolis engine, micropolisj.audio.MusicService music, File file) {
+    this(engine, music);
+    currentFile = file;
+    makeClean();
+    updateMusic();
+  }
+
   private MainWindow(Micropolis engine, micropolisj.audio.MusicService music) {
     this.music = java.util.Objects.requireNonNull(music);
     setIconImage(appIcon.getImage());
